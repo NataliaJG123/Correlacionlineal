@@ -1,0 +1,144 @@
+---
+title: "Correlación lineal"
+author: "Natalia Jimenez Guillen"
+date: "2024-03-17"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+```
+
+```{r, echo = TRUE}
+library(readxl)
+data <-as.data.frame(read_excel("C:/data.xls"))
+View(data)
+print(data)
+```
+
+#Actividad 1
+
+La correlación lineal es una medida estadística que describe la relación entre dos variables numéricas. Indica si las variables tienden a cambiar juntas (correlación positiva), en direcciones opuestas (correlación negativa) o no tienen relación (correlación nula).
+
+#Actividad 2
+La correlación lineal es una prueba de correlación paramétrica porque asume que los datos siguen una distribución específica (normal) y que cumplen con ciertas condicioneS. Las pruebas paramétricas y las no paramétricas se diferencian esencialmente en que las primeras asumen que los datos siguen una distribución especifica y cumplen con ciertas condiciones, mientras que las no paramétricas no hacen suposiciones sobre la distribución de los datos y son más flexibles.
+
+#Actividad 3
+```{r, echo=TRUE}
+correlación_data <- cor(data)
+print(correlación_data)
+```
+
+#Actividad 4
+El valor p , es mayor que el nivel de significancia 0.05, por lo tanto no hay suficiente evidencia para rechazar la hipotesis nula. Esto sugiere que la asociacion observada en la muestra podria haber ocurrido al azar. No hay evidencia suficiente para concluir que hay una asociación significativa entre variables. 
+```{r,echo=TRUE}
+correlación_matriz <- corr.test(data) #Calculo de la matriz de la correlación y los valores p
+print(correlación_matriz)
+correlacion <- correlación_matriz$r #Extracción de los coeficientes de correlación y los valores p
+valores_p <- correlación_matriz$p
+barplot(correlacion, ylim = c(-1, 1), 
+        main = "Coeficiente de correlación y p-values", ylab = "Coeficiente de correlación", 
+        names.arg = colnames(data))
+```
+
+
+#Actividad 5 
+```{r, echo = TRUE}
+library(correlation)
+matriz <-correlation(data)
+matriz
+```
+
+#Actividad 6 
+```{r,echo = TRUE}
+library(ggpubr)
+library(ggplot2)
+ggscatter(data, x= "altura", y="peso",
+          add = "reg.line", conf.int = TRUE,
+          cor.coef=TRUE, cor.method = "pearson",
+          xlab = "altura piezas (mm)", ylab = "peso piezas (mg)")
+```
+
+#Actividad 7
+```{r, echo = TRUE}
+library(corrplot)
+corrplot(cor(data))
+```
+#Actividad 8
+A partir de la siguiente secuencia de valores numéricos: • Distancia (km): 1.1,100.2,90.3,5.4,57.5,6.6,34.7,65.8,57.9,86.1 • Número de cuentas (valor absoluto): 110,2,6,98,40,94,31,5,8,10
+
+#(a)
+
+```{r,echo=TRUE}
+distancia<-c(1.1,100.2,90.3,5.4,57.5,6.6,34.7,65.8,57.9,86.1 )
+n_piezas <-c(110,2,6,98,40,94,31,5,8,10)
+dataframe8 <-data.frame(distancia, n_piezas)
+print(dataframe8)
+```
+
+#(b)
+```{r,echo=TRUE}
+correlacion_dataframe8 <-cor(dataframe8)
+View(correlacion_dataframe8)
+```
+
+#(c)
+```{r,echo=TRUE}
+significancia_dataframe8 <-cor.test(dataframe8$distancia, dataframe8$n_piezas)$p.value
+print(significancia_dataframe8)
+```
+
+#(d)
+```{r, echo=TRUE}
+intervaloconfianza <- cor.test(dataframe8$distancia,dataframe8$n_piezas)$conf.int
+print(intervaloconfianza)
+```
+
+#(e)
+```{r, echo=TRUE}
+intensidad_direccion <- cor(dataframe8$distancia, dataframe8$n_piezas)
+print(intensidad_direccion)
+```
+#(f)
+La relacion entre las dos variables es negativa debido a que el resultado del ejercicio anterior es más cercano a -1. Por lo tanto, esto singifica que cuando una variable tiende a disminuir cuando la otra aumenta .
+
+#(g)
+Una muestra tan pequeña, implica que la interpretación de la correlación entre las variables debe ser más cautelosa. Las muestras reducidas pueden resultar en estimaciones menos conciables y más susceptibles a variaciones aleatorias. Siempre que sea posible, es mas conveniente obtener mas datos. Por lo tanto no es apropiado trabajar con tan pocos datos. 
+
+#Ejercicio 9 
+Relación lineal. Cuantas mas cervezas se consumen, mayor es el rango de felicidad. Es decir una variable aumenta al mismo tiempo que la otra
+```{r, echo=TRUE}
+Cerveza <- seq(1, 10, by = 1)
+Felicidad <- Cerveza + rnorm(length(Cerveza), mean = 0, sd =1)
+
+Relacion_lineal <- data.frame(Cerveza, Felicidad)
+ggplot(Relacion_lineal, aes(x=Cerveza, y = Felicidad)) + geom_point() + geom_smooth(method ="lm", se= FALSE, color = "yellow") + labs(title = "Relación lineal", x="Consumo de cerveza", y= "Niveles de felicidad") 
+```
+
+Relación monotona. Cuando aumenta la edad, es posible que su sueldo tambien aumente o disminuya, pero no en una tasa constante. 
+```{r, echo=TRUE}
+edad <- seq(18,65, by=1)
+sueldo <- edad + rnorm(length(edad), mean = 0, sd=5)
+
+relacionmontona <- data.frame(edad, sueldo)
+
+ggplot(relacionmontona, aes(x = edad, y= sueldo)) +  geom_point() + geom_smooth(method = "loess", se = FALSE, color = "pink")+
+                labs(title = "Relación Monótona", x="edad", y = "sueldo")
+```
+#(10)
+La correlación de Spearman se enfoca en la dirección y fuerza de la relación monotona entre las variables.  El tipo de prueba Spearman es una prueba de correlación no paramétrica de la prueba de correlación de Pearson. Apropiada cuando la relación entre las variables no es lineal. 
+```{r, echo=TRUE}
+set.seed(123)
+estudio <- c(6, 7, 5, 8, 4)  
+trabajo <- c(2, 3, 1, 5, 4)
+dataframecorr <-data.frame(estudio, trabajo)
+prueba_correlacion <- cor.test(dataframecorr$estudio, dataframecorr$trabajo, method = "spearman")
+print(prueba_correlacion)
+```
